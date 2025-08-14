@@ -39,7 +39,8 @@ extern "C" {
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-//位�?�信�?
+
+//Ƭѡ�ź�
 #define SET_SYNC1()		HAL_GPIO_WritePin(SYNC1_GPIO_Port, SYNC1_Pin, GPIO_PIN_SET)
 #define CLR_SYNC1()		HAL_GPIO_WritePin(SYNC1_GPIO_Port, SYNC1_Pin, GPIO_PIN_RESET)
 
@@ -49,11 +50,11 @@ void MX_GPIO_Init(void);
 #define SET_SYNC3()		HAL_GPIO_WritePin(SYNC3_GPIO_Port, SYNC1_Pin, GPIO_PIN_SET)
 #define CLR_SYNC3()		HAL_GPIO_WritePin(SYNC3_GPIO_Port, SYNC1_Pin, GPIO_PIN_RESET)
 
-//spi时钟
+
 #define SET_SCLK()	    HAL_GPIO_WritePin(SCK_GPIO_Port, SCK_Pin, GPIO_PIN_SET)
 #define CLR_SCLK()		HAL_GPIO_WritePin(SCK_GPIO_Port, SCK_Pin, GPIO_PIN_RESET)
 
-//spi输出信号
+
 #define	SET_SDIN()	    HAL_GPIO_WritePin(SDIN_GPIO_Port, SDIN_Pin, GPIO_PIN_SET)
 #define	CLR_SDIN()		HAL_GPIO_WritePin(SDIN_GPIO_Port, SDIN_Pin, GPIO_PIN_RESET)
 

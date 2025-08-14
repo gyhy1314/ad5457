@@ -91,10 +91,6 @@ int main(void)
     HAL_GPIO_WritePin(CLR_GPIO_Port, CLR_Pin, GPIO_PIN_SET);
 
     long int cstr = 0;
-    long int buf;
-    unsigned	char	tx[3] = {0,0,0};
-    unsigned    char    txt='a';
-
     ConfigAD5754R();
 
     cstr = DAC_Register | DAC_Channel_A | 0x008000;		//VoutA=4.97v
