@@ -41,7 +41,16 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+//各个口子上的大小范围
+extern uint16_t DAC_HIGH_COUNT[12];
+extern uint16_t DAC_LOW_COUNT[12];
+//各个DAC通道的选择
+extern long int DAC_Channel[4];
+//各个DAC的输出值
+extern long int DAC_HIGH_Value[12];
+extern long int DAC_LOW_Value[12];
+//片选端口
+extern uint16_t DAC_CS_Port[3];
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -28,7 +29,15 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+uint32_t uwTick1[12];
+uint16_t DAC_HIGH_COUNT[12];
+uint16_t DAC_LOW_COUNT[12];
+//各个DAC通道的选择
+long int DAC_Channel[4];
+long int DAC_HIGH_Value[12];
+long int DAC_LOW_Value[12];
+//片选端口
+uint16_t DAC_CS_Port[3];
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -87,14 +96,25 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_UART8_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+    for (int i = 0; i < 12; ++i) {
+        DAC_HIGH_COUNT[i] = 100;
+        DAC_LOW_COUNT[i] = 200;
+        DAC_HIGH_Value[i] = 0x008000;
+        DAC_LOW_Value[i] = 0x000000;
+        uwTick1[i] = 0;
+    }
+    DAC_CS_Port[0] = SYNC1_Pin;
+    DAC_CS_Port[1] = SYNC2_Pin;
+    DAC_CS_Port[2] = SYNC3_Pin;
+    DAC_Channel[0] = DAC_Channel_A;
+    DAC_Channel[1] = DAC_Channel_B;
+    DAC_Channel[2] = DAC_Channel_C;
+    DAC_Channel[3] = DAC_Channel_D;
     HAL_GPIO_WritePin(CLR_GPIO_Port, CLR_Pin, GPIO_PIN_SET);
-
     long int cstr = 0;
     ConfigAD5754R();
-
-    cstr = DAC_Register | DAC_Channel_A | 0x008000;		//VoutA=4.97v
-    WriteToAD5754RViaSpi(&cstr);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,7 +124,16 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//      WriteToAD5754RViaSpi(&cstr);
+      for (int i = 0; i < 12; ++i) {
+          if (uwTick1[i] == DAC_HIGH_COUNT[i]) {
+              cstr = DAC_Register | DAC_Channel[i % 4] | DAC_HIGH_Value[i];
+              WriteToAD5754RViaSpi(&cstr);
+          } else if (uwTick1[i] == DAC_LOW_COUNT[i]){
+              cstr = DAC_Register | DAC_Channel[i % 4] | DAC_LOW_Value[i];		//VoutA=0v
+              WriteToAD5754RViaSpi(&cstr);
+              uwTick1[i] = 0;
+          }
+      }
   }
   /* USER CODE END 3 */
 }
@@ -124,26 +153,25 @@ void SystemClock_Config(void)
 
   /** Configure the main internal regulator output voltage
   */
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 4;
-  RCC_OscInitStruct.PLL.PLLN = 12;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 2;
+  RCC_OscInitStruct.PLL.PLLN = 64;
   RCC_OscInitStruct.PLL.PLLP = 2;
   RCC_OscInitStruct.PLL.PLLQ = 2;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_3;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
-  RCC_OscInitStruct.PLL.PLLFRACN = 4096;
+  RCC_OscInitStruct.PLL.PLLFRACN = 0;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -156,7 +184,7 @@ void SystemClock_Config(void)
                               |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB3CLKDivider = RCC_APB3_DIV2;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_APB1_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV2;

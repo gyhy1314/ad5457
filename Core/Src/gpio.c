@@ -96,7 +96,8 @@ void MX_GPIO_Init(void)
 /* USER CODE BEGIN 2 */
 void delay (int length)
 {
-    HAL_Delay(length);
+    while (length >0)
+        length--;
 }
 
 /********************************************************************************
@@ -114,16 +115,12 @@ void WriteToAD5754RViaSpi(long int *RegisterData)
     CLR_SYNC1();	 //bring CS low
     delay(1);
     //Write out the ControlWord
-    for(i=0; i<24; i++)
-    {
+    for(i=0; i<24; i++) {
         SET_SCLK();
         delay(5);
-        if(0x800000 == (ValueToWrite & 0x800000))
-        {
+        if(0x800000 == (ValueToWrite & 0x800000)) {
             SET_SDIN();	  //Send one to SDI pin
-        }
-        else
-        {
+        } else {
             CLR_SDIN();	  //Send zero to SDI pin
         }
         delay(5);
@@ -151,12 +148,12 @@ void ConfigAD5754R(void)
     long int *p;
     long int ins[2] = {0, 0};
     ins[0] = Power_Control_Register | PowerUp_ALL;
-    ins[1] = Output_Range_Select_Register | Range5_Select | DAC_Channel_ALL;
+    ins[1] = Output_Range_Select_Register | Range1_Select | DAC_Channel_ALL;
     p = ins;
-    for(i=0; i<2; i++)
-    {
+    for(i=0; i<2; i++) {
         WriteToAD5754RViaSpi(p);
         delay(200);
-        p++;}
+        p++;
+    }
 }
 /* USER CODE END 2 */

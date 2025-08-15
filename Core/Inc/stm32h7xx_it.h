@@ -27,7 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "gpio.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -37,7 +37,8 @@
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+//计数器内容
+extern uint32_t uwTick1[12];
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -55,6 +56,7 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
+void TIM2_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */
